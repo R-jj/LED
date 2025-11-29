@@ -1,42 +1,46 @@
-## Description
+# 8-LED Dual-Mode Animation Controller
 
-A basic getting started program.
+This project implements a sequence controller for 8 LEDs using the MAX78000. It features two distinct animation patterns that can be toggled in real-time using a physical push-button.
 
-This version of Hello_World prints an incrementing count to the console UART and toggles an LED once every 500 ms.
+## 🔌 Hardware Wiring
 
-## Software
+This code requires **8 external LEDs** and **1 Button**. The GPIOs are configured as **Active Low** (Sink Current).
 
-### Project Usage
+### LED Connections
+Connect the **Cathode (-)** of the LEDs to the pins below, and the **Anode (+)** to VCC (3.3V) via a resistor.
 
-Universal instructions on building, flashing, and debugging this project can be found in the **[MSDK User Guide](https://analogdevicesinc.github.io/msdk/USERGUIDE/)**.
+| LED Index | Logic Name | Port/Pin | Voltage Domain |
+| :--- | :--- | :--- | :--- |
+| **0** | Outer Left | **P2.3** | VDDIOH (3.3V) |
+| **1** | Mid-Outer Left | **P2.4** | VDDIOH (3.3V) |
+| **2** | Mid-Inner Left | **P1.0** | VDDIO (1.8V/3.3V) |
+| **3** | Inner Left | **P0.7** | VDDIO (1.8V/3.3V) |
+| **4** | Inner Right | **P0.5** | VDDIO (1.8V/3.3V) |
+| **5** | Mid-Inner Right| **P0.6** | VDDIO (1.8V/3.3V) |
+| **6** | Mid-Outer Right| **P2.6** | VDDIOH (3.3V) |
+| **7** | Outer Right | **P2.7** | VDDIOH (3.3V) |
 
-### Project-Specific Build Notes
+### Button Connection
+* **Pin**: **P0.2**
+* **Type**: Active Low (Connect Pin to Switch -> Switch to Ground).
+* **Resistor**: Internal Pull-up is enabled in software; no external resistor needed.
 
-* This project comes pre-configured for the MAX78000EVKIT.  See [Board Support Packages](https://analogdevicesinc.github.io/msdk/USERGUIDE/#board-support-packages) in the UG for instructions on changing the target board.
+## 🕹️ Functionality
 
-## Setup
+The program runs in an infinite loop, constantly polling the button status.
 
-If using the MAX78000EVKIT (EvKit_V1):
--   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
--   Connect pins 1 and 2 (P0_1) of the JH1 (UART 0 EN) header.
--   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
--   Close jumper JP1 (LED1 EN).
--   Close jumper JP2 (LED2 EN).
+### The Modes
+The system toggles between two visual modes when the button is pressed.
 
-If using the MAX78000FTHR (FTHR_RevA)
--   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
--	Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
 
-## Expected Output
 
-The Console UART of the device will output these messages:
+[Image of LED array schematic]
 
-```
-Hello World!
-count : 0
-count : 1
-count : 2
-count : 3
-```
 
-You will also observe the LED (LED1 for EvKit_V1 or D1 for the Featherboard) blinking at a rate of 2Hz.
+**Mode 0: Convergence (Inward)**
+The LEDs light up in pairs starting from the outside and meeting in the middle.
+```text
+Step 1: [X . . . . . . X]  (LEDs 0 & 7)
+Step 2: [. X . . . . X .]  (LEDs 1 & 6)
+Step 3: [. . X . . X . .]  (LEDs 2 & 5)
+Step 4: [. . . X X . . .]  (LEDs 3 & 4)
